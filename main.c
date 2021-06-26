@@ -18,6 +18,10 @@ typedef struct crypto{
     struct crypto *next;
 } Crypto;
 
+void printDoneTransactions(char name[4], float qty, float price){
+    printf("NOVA TRANSAÇÃO: %.2f %s vendidos a R$ %.2f\n", qty, name, price);
+}
+
 Crypto* removeOp(Crypto *head){
     Crypto *current = head;
     Crypto *delete = (Crypto*) malloc(sizeof(Crypto));
@@ -57,62 +61,107 @@ Crypto* transact(Crypto *offer, Crypto *head, Price *price){
                     if(offer->qty == current->qty){
                         float aux;
 
-                        if(strcmp(offer->name, "BTC") == 0){
+                        if(strcmp(offer->name, "BTC") == 0 && offer->qty > 0 && current->qty > 0){
                             price->btc = offer->price/current->qty;
 
                             aux = offer->qty;
 
                             offer->qty = offer->qty - current->qty;
                             current->qty = current->qty - aux;
+
+                            printDoneTransactions(offer->name, aux-1, price->btc);
                         }
-                        if(strcmp(offer->name, "ADA") == 0){
+                        if(strcmp(offer->name, "ADA") == 0 && offer->qty > 0 && current->qty > 0){
                             price->ada = offer->price/current->qty;
 
                             aux = offer->qty;
 
                             offer->qty = offer->qty - current->qty;
                             current->qty = current->qty - aux;
+
+                            printDoneTransactions(offer->name, aux-1, price->ada);
                         }
-                        if(strcmp(offer->name, "ETH") == 0){
+                        if(strcmp(offer->name, "ETH") == 0 && offer->qty > 0 && current->qty > 0){
                             price->eth = offer->price/current->qty;
 
                             aux = offer->qty;
 
                             offer->qty = offer->qty - current->qty;
                             current->qty = current->qty - aux;
+
+                            printDoneTransactions(offer->name, aux-1, price->eth);
                         }
                     }
 
-                    // if(offer->qty > current->qty){
-                    //     printf("%f\n%f\n", offer->qty, current->qty);
-                    // }
+                    if(offer->qty > current->qty){
+                        float aux;
+
+                        if(strcmp(offer->name, "BTC") == 0 && offer->qty > 0 && current->qty > 0){
+                            price->btc = current->price/offer->qty;
+
+                            aux = offer->qty;
+
+                            offer->qty = offer->qty - current->qty;
+                            current->qty -= current->qty;
+
+                            printDoneTransactions(offer->name, aux-1, price->btc);
+                        }
+
+                        if(strcmp(offer->name, "ADA") == 0 && offer->qty > 0 && current->qty > 0){
+                            price->ada = current->price/offer->qty;
+
+                            aux = offer->qty;
+
+                            offer->qty = offer->qty - current->qty;
+                            current->qty -= current->qty;
+
+                            printDoneTransactions(offer->name, aux-1, price->btc);
+                        }
+
+                        if(strcmp(offer->name, "ETH") == 0 && offer->qty > 0 && current->qty > 0){
+                            price->eth = current->price/offer->qty;
+
+                            aux = offer->qty;
+
+                            offer->qty = offer->qty - current->qty;
+                            current->qty -= current->qty;
+
+                            printDoneTransactions(offer->name, aux-1, price->btc);
+                        }
+                    }
 
                     if(offer->qty < current->qty){
                         float aux;
 
-                        if(strcmp(offer->name, "BTC") == 0){
+                        if(strcmp(offer->name, "BTC") == 0 && offer->qty > 0 && current->qty > 0){
                             price->btc = current->price/offer->qty;
 
                             aux = offer->qty;
 
                             offer->qty = current->qty - offer->qty;
                             current->qty -= current->qty;
+
+                            printDoneTransactions(offer->name, aux-1, price->btc);
                         }
-                        if(strcmp(offer->name, "ADA") == 0){
+                        if(strcmp(offer->name, "ADA") == 0 && offer->qty > 0 && current->qty > 0){
                             price->ada = current->price/offer->qty;
 
                             aux = offer->qty;
 
                             offer->qty = current->qty - offer->qty;
                             current->qty -= current->qty;
+
+                            printDoneTransactions(offer->name, aux-1, price->ada);
                         }
-                        if(strcmp(offer->name, "ETH") == 0){
+                        if(strcmp(offer->name, "ETH") == 0 && offer->qty > 0 && current->qty > 0){
                             price->eth = current->price/offer->qty;
 
                             aux = offer->qty;
 
                             offer->qty = current->qty - offer->qty;
                             current->qty -= current->qty;
+
+                            printDoneTransactions(offer->name, aux-1, price->eth);
                         }
                     }
                 }
@@ -120,9 +169,9 @@ Crypto* transact(Crypto *offer, Crypto *head, Price *price){
         }
 
         current = current->next;
-    }
 
-    removeOp(head);
+        removeOp(head);
+    }
 }
 
 Crypto* fillOpsList(Crypto op, Crypto *head, Price *price){
@@ -156,7 +205,7 @@ Crypto* newOp(Crypto *head, Price *price){
     while(menuOp0 != 1 && menuOp0 != 2 && menuOp0 != 3){
         printf("ESCOLHA A CRIPTOMOEDA\n\nOpções:\n\nBTC | Digite 1\nADA | Digite 2\nETH | Digite 3\n\nSua opção: ");
         fflush(stdin);
-        scanf(" %d", &menuOp0);
+        scanf("%d", &menuOp0);
         printf("\n------------------------------------------------------------------------------------------------------------------------------------------------\n\n");
     }
 
@@ -178,7 +227,7 @@ Crypto* newOp(Crypto *head, Price *price){
     while(menuOp1 != 1 && menuOp1 != 2){
         printf("ESCOLHA A OPERAÇÃO\n\nOpções:\n\nCompra | Digite 1\nVenda  | Digite 2\n\nSua opção: ");
         fflush(stdin);
-        scanf(" %d", &menuOp1);
+        scanf("%d", &menuOp1);
         printf("\n------------------------------------------------------------------------------------------------------------------------------------------------\n\n");
     }
 
@@ -197,8 +246,8 @@ Crypto* newOp(Crypto *head, Price *price){
 
     while(inputCheck == 0){
         printf("INSIRA A QUANTIDADE\n\nSua opção: ");
-        fflush(stdin);inputCheck = 
-        scanf(" %f", &newOp.qty);
+        fflush(stdin);
+        inputCheck = scanf("%f", &newOp.qty);
         printf("\n------------------------------------------------------------------------------------------------------------------------------------------------\n\n");
     }
 
@@ -206,10 +255,13 @@ Crypto* newOp(Crypto *head, Price *price){
 
     while(inputCheck == 0){
         printf("INSIRA O PREÇO\n\nSua opção: ");
-        fflush(stdin);inputCheck = 
-        scanf(" %f", &newOp.price);
+        fflush(stdin);
+        inputCheck = scanf("%f", &newOp.price);
         printf("\n------------------------------------------------------------------------------------------------------------------------------------------------\n\n");
     }
+
+    menuOp0 = 0;
+    menuOp1 = 0;
 
     return fillOpsList(newOp, head, price);
 }
@@ -260,14 +312,16 @@ Crypto* printOpsList(Crypto *head){
             printf("%s    | %.2f | R$ %.2f", sellOffers[cont].name, sellOffers[cont].qty, sellOffers[cont].price);
         }
 
+        if(buyCont-cont <= 0){
+            printf("\n");
+        }
+
         if(cont < buyCont){
-            printf("                                                                                        %s    | %.2f | R$ %.2f\n\n", buyOffers[cont].name, buyOffers[cont].qty, buyOffers[cont].price);
+            printf("                                                                                        %s    | %.2f | R$ %.2f\n", buyOffers[cont].name, buyOffers[cont].qty, buyOffers[cont].price);
         }
 
         cont++;
     }
-
-    printf("\n");
 }
 
 Crypto* readDatabase(FILE *database, Crypto *head, Price *price){
@@ -338,7 +392,8 @@ void main(){
 
     printOpsList(head);
 
-    while(0 == 0){
+    while(1){
+        fflush(stdin);
         head = newOp(head, price);
 
         printOpsList(head);
