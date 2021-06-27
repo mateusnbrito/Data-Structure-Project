@@ -62,34 +62,34 @@ Crypto* transact(Crypto *offer, Crypto *head, Price *price){
                         float aux;
 
                         if(strcmp(offer->name, "BTC") == 0 && offer->qty > 0 && current->qty > 0){
-                            price->btc = offer->price/current->qty;
+                            price->btc = offer->price;
 
                             aux = offer->qty;
 
                             offer->qty = offer->qty - current->qty;
                             current->qty = current->qty - aux;
 
-                            printDoneTransactions(offer->name, aux-1, price->btc);
+                            printDoneTransactions(offer->name, aux, price->btc);
                         }
                         if(strcmp(offer->name, "ADA") == 0 && offer->qty > 0 && current->qty > 0){
-                            price->ada = offer->price/current->qty;
+                            price->ada = offer->price;
 
                             aux = offer->qty;
 
                             offer->qty = offer->qty - current->qty;
                             current->qty = current->qty - aux;
 
-                            printDoneTransactions(offer->name, aux-1, price->ada);
+                            printDoneTransactions(offer->name, aux, price->ada);
                         }
                         if(strcmp(offer->name, "ETH") == 0 && offer->qty > 0 && current->qty > 0){
-                            price->eth = offer->price/current->qty;
+                            price->eth = offer->price;
 
                             aux = offer->qty;
 
                             offer->qty = offer->qty - current->qty;
                             current->qty = current->qty - aux;
 
-                            printDoneTransactions(offer->name, aux-1, price->eth);
+                            printDoneTransactions(offer->name, aux, price->eth);
                         }
                     }
 
@@ -97,36 +97,36 @@ Crypto* transact(Crypto *offer, Crypto *head, Price *price){
                         float aux;
 
                         if(strcmp(offer->name, "BTC") == 0 && offer->qty > 0 && current->qty > 0){
-                            price->btc = current->price/offer->qty;
+                            price->btc = offer->price;
 
                             aux = offer->qty;
 
                             offer->qty = offer->qty - current->qty;
                             current->qty -= current->qty;
 
-                            printDoneTransactions(offer->name, aux-1, price->btc);
+                            printDoneTransactions(offer->name, aux-offer->qty, price->btc);
                         }
 
                         if(strcmp(offer->name, "ADA") == 0 && offer->qty > 0 && current->qty > 0){
-                            price->ada = current->price/offer->qty;
+                            price->ada = offer->price;
 
                             aux = offer->qty;
 
                             offer->qty = offer->qty - current->qty;
                             current->qty -= current->qty;
 
-                            printDoneTransactions(offer->name, aux-1, price->btc);
+                            printDoneTransactions(offer->name, aux-offer->qty, price->ada);
                         }
 
                         if(strcmp(offer->name, "ETH") == 0 && offer->qty > 0 && current->qty > 0){
-                            price->eth = current->price/offer->qty;
+                            price->eth = offer->price;
 
                             aux = offer->qty;
 
                             offer->qty = offer->qty - current->qty;
                             current->qty -= current->qty;
 
-                            printDoneTransactions(offer->name, aux-1, price->btc);
+                            printDoneTransactions(offer->name, aux-offer->qty, price->eth);
                         }
                     }
 
@@ -134,34 +134,34 @@ Crypto* transact(Crypto *offer, Crypto *head, Price *price){
                         float aux;
 
                         if(strcmp(offer->name, "BTC") == 0 && offer->qty > 0 && current->qty > 0){
-                            price->btc = current->price/offer->qty;
+                            price->btc = offer->price;
 
                             aux = offer->qty;
 
                             offer->qty = current->qty - offer->qty;
                             current->qty -= current->qty;
 
-                            printDoneTransactions(offer->name, aux-1, price->btc);
+                            printDoneTransactions(offer->name, offer->qty-current->qty, price->btc);
                         }
                         if(strcmp(offer->name, "ADA") == 0 && offer->qty > 0 && current->qty > 0){
-                            price->ada = current->price/offer->qty;
+                            price->ada = offer->price;
 
                             aux = offer->qty;
 
                             offer->qty = current->qty - offer->qty;
                             current->qty -= current->qty;
 
-                            printDoneTransactions(offer->name, aux-1, price->ada);
+                            printDoneTransactions(offer->name, offer->qty-current->qty, price->ada);
                         }
                         if(strcmp(offer->name, "ETH") == 0 && offer->qty > 0 && current->qty > 0){
-                            price->eth = current->price/offer->qty;
+                            price->eth = offer->price;
 
                             aux = offer->qty;
 
                             offer->qty = current->qty - offer->qty;
                             current->qty -= current->qty;
 
-                            printDoneTransactions(offer->name, aux-1, price->eth);
+                            printDoneTransactions(offer->name, offer->qty-current->qty, price->eth);
                         }
                     }
                 }
@@ -358,7 +358,7 @@ Crypto* readDatabase(FILE *database, Crypto *head, Price *price){
                 start = end+1;
                 end = (strlen(line))-2;
 
-                strncpy(auxTextPrice[i], &text[start], end-start);
+                strncpy(auxTextPrice[i], &text[start], (end-start)+1);
 
                 newOp.price = atof(auxTextPrice[i]);
             }
@@ -396,6 +396,7 @@ void main(){
         fflush(stdin);
         head = newOp(head, price);
 
+        getCurrentPrice(price);
         printOpsList(head);
     }
 }
